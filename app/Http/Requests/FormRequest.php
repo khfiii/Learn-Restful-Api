@@ -3,10 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Foundation\Http\FormRequest as FormRequestCustom;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AuthRequest extends FormRequest
+class FormRequest extends FormRequestCustom
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,21 @@ class AuthRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required|min:5'
+            'name' => 'required', 
+            'slug' => 'required|unique:forms,slug|alpha_dash|', 
+            'allowed_domains' => 'array', 
         ];
     }
 
+
     protected function failedValidation(Validator $validator)
     {
-           throw new HttpResponseException(response()->json($validator->errors(), 422)); 
+       throw new HttpResponseException(response()->json([
+        'message' => $validator->errors()
+       ], 422)); 
     }
+
+    
+
+
 }
